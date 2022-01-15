@@ -1,0 +1,8 @@
+[Bb]in/
+[Oo]bj/
+[Pp]ackages/
+[Pp]ublish/
+/.idea/
+.vs/
+*.suo
+*.user
