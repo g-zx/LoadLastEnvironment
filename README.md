@@ -4,6 +4,7 @@ Bigscreen mod that restores the last used environment in your room.
 
 ## Version history
 - 0.1 - First release
+- 0.2 - Bugfix
 
 ## Installation
 1. Download the latest version of LoadLastEnvironment.dll from the [Releases](https://github.com/g-zx/LoadLastEnvironment/releases) page.

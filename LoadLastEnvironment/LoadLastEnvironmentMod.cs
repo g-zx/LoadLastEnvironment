@@ -8,7 +8,7 @@ namespace LoadLastEnvironment
     {
         internal const string Name = "LoadLastEnvironment";
         internal const string Author = "gzx";
-        internal const string Version = "0.1";
+        internal const string Version = "0.2";
         internal const string DownloadLink = "https://github.com/g-zx/LoadLastEnvironment";
         internal const string Description = "Bigscreen mod that restores the last used environment in your room.";
         internal const string Copyright = "Copyright © 2022";
@@ -20,8 +20,9 @@ namespace LoadLastEnvironment
 
         private MelonPreferences_Entry<string> _savedEnvironmentName;
 
-        private string _roomCreatorUserId;
         private App _bigscreen;
+        private volatile bool _isSwitchingRoom;
+        private volatile bool _isMyRoom;
 
         public override void OnApplicationStart()
         {
@@ -36,17 +37,24 @@ namespace LoadLastEnvironment
         internal void Initialize(App bigscreenInstance)
         {
             _bigscreen = bigscreenInstance;
+            _bigscreen.RoomSwitchStarted += new Action(HandleRoomSwitchStarted);
             _bigscreen.RoomSwitchFinished += new Action(HandleRoomSwitchFinished);
+        }
+
+        private void HandleRoomSwitchStarted()
+        {
+            _isSwitchingRoom = true;
         }
 
         private void HandleRoomSwitchFinished()
         {
-            _roomCreatorUserId = _bigscreen.CurrentRoom.Creator.UserSessionId;
+            _isSwitchingRoom = false;
+            _isMyRoom = _bigscreen.CurrentRoom.Creator.UserSessionId == _bigscreen.userModel.Profile.UserSessionId;
         }
 
         public void HandleEnvironmentChanged()
         {
-            if (_bigscreen.CurrentRoom.Creator.UserSessionId == _roomCreatorUserId && _bigscreen.CurrentEnvironment.name != _savedEnvironmentName.Value)
+            if (!_isSwitchingRoom && _isMyRoom && _bigscreen.CurrentEnvironment.name != _savedEnvironmentName.Value)
             {
                 LoggerInstance.Msg("Environment changed to {0}, saving", _bigscreen.CurrentEnvironment.name);
 
